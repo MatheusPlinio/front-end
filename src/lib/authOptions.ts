@@ -1,5 +1,6 @@
-import { NextAuthOptions } from "next-auth"
+import { NextAuthOptions, User } from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
+import jwt from "jsonwebtoken"
 
 export const nextAuthOptions: NextAuthOptions = {
     providers: [
@@ -10,12 +11,11 @@ export const nextAuthOptions: NextAuthOptions = {
                 password: { label: 'password', type: 'password' }
             },
 
-            async authorize(credentials, res) {
+            async authorize(credentials, req) {
                 try {
                     const response = await fetch(`${process.env.API_AUTH_URL}/login`, {
                         method: 'POST',
                         headers: {
-                            // 'Accept': 'application/json;version=v1_web',
                             'Content-type': 'application/json'
                         },
                         body: JSON.stringify({
@@ -27,11 +27,13 @@ export const nextAuthOptions: NextAuthOptions = {
                     const data = await response.json()
 
                     if (data && response.ok) {
-                        return data
+                        const decodedToken = jwt.verify(data.token, process.env.JWT_SECRET as string) as User & { token: string };
+                        return { ...decodedToken, token: data.token }
                     }
                     return null
                 } catch (error) {
                     console.error(error)
+                    return null
                 }
             },
         })
@@ -42,7 +44,6 @@ export const nextAuthOptions: NextAuthOptions = {
     },
     callbacks: {
         async jwt({ token, user }) {
-            token: process.env.NEXTAUTH_SECRET
             if (user) {
                 token.user = user;
             }
