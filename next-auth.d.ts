@@ -8,17 +8,17 @@ declare module "next-auth" {
         username: string;
         role: string[];
         gender: string;
-        address: string;
-        cep: string;
-        locality_city: string;
-        state: string;
-        cellphone: string;
-        token: string; // Adicionei o campo token aqui para armazenar o JWT
+        address: string
+        cep: String
+        locality_city: String
+        state: String
+        celphone: String
+        token: string;
     }
 
     interface Session extends DefaultSession {
         user: User;
-        accessToken: string; // Adiciona o accessToken na sessão
+        accessToken: string;
     }
 }
 
