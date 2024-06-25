@@ -1,6 +1,23 @@
 import { NextAuthOptions, User } from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
 import jwt from "jsonwebtoken"
+import { JWT } from "next-auth/jwt"
+
+async function refreshToken(token: JWT): Promise<JWT> {
+    const res = await fetch(`${process.env.API_AUTH_URL}/refresh_tokens`, {
+        method: "POST",
+        headers: {
+            authorization: `Refresh ${token.backendTokens.refreshToken}`
+        }
+    })
+
+    const response = await res.json()
+
+    return {
+        ...token,
+        backendTokens: response
+    }
+}
 
 export const nextAuthOptions: NextAuthOptions = {
     providers: [
@@ -27,8 +44,8 @@ export const nextAuthOptions: NextAuthOptions = {
                     const data = await response.json()
 
                     if (data && response.ok) {
-                        const decodedToken = jwt.verify(data.token, process.env.JWT_SECRET as string) as User & { token: string };
-                        return { ...decodedToken, token: data.token }
+                        const decodedToken = jwt.verify(data.backendTokens.accessToken, process.env.JWT_SECRET as string) as User & { token: string };
+                        return { ...decodedToken, backendTokens: data.backendTokens.accessToken }
                     }
                     return null
                 } catch (error) {
@@ -44,13 +61,18 @@ export const nextAuthOptions: NextAuthOptions = {
     },
     callbacks: {
         async jwt({ token, user }) {
-            if (user) {
-                token.user = user;
-            }
-            return token;
+            if (user) return { ...token, ...user };
+
+            if (new Date().getTime() < token.backendTokens.expiresIn)
+
+                return token;
+
+            return await refreshToken(token)
         },
         async session({ session, token }) {
             session.user = token.user;
+            session.backendTokens = token.backendTokens;
+
             return session;
         }
     },

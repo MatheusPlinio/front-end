@@ -21,13 +21,21 @@ declare module "next-auth" {
 
     interface Session extends DefaultSession {
         user: User;
-        accessToken: string;
+        backendTokens: {
+            accessToken: string;
+            refreshToken: string;
+            expiresIn: number;
+        };
     }
 }
 
 declare module "next-auth/jwt" {
     interface JWT extends DefaultJWT {
         user: User;
-        accessToken: string; // Adiciona o accessToken no JWT
+        backendTokens: {
+            accessToken: string;
+            refreshToken: string;
+            expiresIn: number;
+        };
     }
 }
