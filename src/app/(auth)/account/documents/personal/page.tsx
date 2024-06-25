@@ -1,7 +1,21 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { nextAuthOptions } from "@/lib/authOptions";
+import { ToIsoForToPtBR } from "@/utils/formatDates";
+import { getFirstName, getLastName } from "@/utils/splits";
+import { getServerSession, User } from "next-auth";
 
-export default function page() {
+export default async function page() {
+    const session = await getServerSession(nextAuthOptions)
+
+    const user = session?.user as User
+
+    const firstName = getFirstName(user.username)
+
+    const lastName = getLastName(user.username)
+
+    const birtday = ToIsoForToPtBR(user.birthday)
+
     return (
         <div className="m-4">
             <div className="m-4">
@@ -14,6 +28,7 @@ export default function page() {
                         id="firstName"
                         readOnly
                         placeholder="Primeiro Nome"
+                        defaultValue={firstName}
                     />
                 </div>
                 <div className="flex flex-col mb-5">
@@ -22,6 +37,7 @@ export default function page() {
                         id="lastName"
                         readOnly
                         placeholder="Último Nome"
+                        defaultValue={lastName}
                     />
                 </div>
                 <div className="flex flex-col mb-5">
@@ -30,6 +46,7 @@ export default function page() {
                         id="nationalIdentity"
                         readOnly
                         placeholder="Identidade Nacional"
+                        defaultValue={user.cpf}
                     />
                 </div>
                 <div className="flex flex-col mb-5">
@@ -38,6 +55,7 @@ export default function page() {
                         id="birthday"
                         readOnly
                         placeholder="Data de Nascimento"
+                        defaultValue={birtday}
                     />
                 </div>
                 <div className="flex flex-col mb-5">
@@ -46,6 +64,7 @@ export default function page() {
                         id="birthday"
                         readOnly
                         placeholder="Data de Nascimento"
+                        defaultValue={user.address}
                     />
                 </div>
                 <div className="flex flex-col mb-5">
@@ -54,6 +73,7 @@ export default function page() {
                         id="country"
                         readOnly
                         placeholder="País"
+                        defaultValue={user.country}
                     />
                 </div>
                 <div className="flex flex-col mb-5">
@@ -62,6 +82,7 @@ export default function page() {
                         id="state"
                         readOnly
                         placeholder="Estado"
+                        defaultValue={user.state}
                     />
                 </div>
                 <div className="flex flex-col mb-5">
@@ -70,6 +91,7 @@ export default function page() {
                         id="city"
                         readOnly
                         placeholder="Cidade"
+                        defaultValue={user.locality_city}
                     />
                 </div>
                 <div className="flex flex-col mb-5">
@@ -78,6 +100,7 @@ export default function page() {
                         id="cep"
                         readOnly
                         placeholder="CEP"
+                        defaultValue={user.cep}
                     />
                 </div>
             </form>

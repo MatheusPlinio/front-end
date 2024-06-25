@@ -9,10 +9,13 @@ declare module "next-auth" {
         role: string[];
         gender: string;
         address: string
-        cep: String
-        locality_city: String
-        state: String
-        celphone: String
+        cpf: string
+        birthday: Date
+        cep: string
+        locality_city: string
+        state: string
+        country: string
+        celphone: string
         token: string;
     }
 
