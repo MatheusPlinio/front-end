@@ -1,7 +1,13 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { nextAuthOptions } from "@/lib/authOptions";
+import { getServerSession } from "next-auth";
 
-export default function page() {
+export default async function page() {
+
+    const session = await getServerSession(nextAuthOptions)
+    const user = session;
+
     return (
         <div className="m-4">
             <div className="m-4">
@@ -14,6 +20,7 @@ export default function page() {
                         id="name"
                         readOnly
                         placeholder="Nome de Exibição"
+                        defaultValue={user?.user.username}
                     />
                 </div>
                 <div className="flex flex-col mb-5">
@@ -22,6 +29,7 @@ export default function page() {
                         id="email"
                         readOnly
                         placeholder="Endereço de Email"
+                        defaultValue={user?.user.email}
                     />
                 </div>
                 <div className="flex flex-col mb-5">
@@ -31,6 +39,7 @@ export default function page() {
                         readOnly
                         placeholder="Senha atual"
                         type="password"
+                        defaultValue={"**************"}
                     />
                 </div>
                 <div className="flex flex-col mb-5">
@@ -39,6 +48,8 @@ export default function page() {
                         id="telefone"
                         readOnly
                         placeholder="Telefone"
+                        type="text"
+                        defaultValue={user?.user.celphone as string}
                     />
                 </div>
             </form>
